@@ -1,0 +1,143 @@
+/* themes.css - macOS 27 Liquid Glass Design Tokens & Optical System */
+
+:root, :root[data-theme="frostbolt"] {
+  --theme-name: "frostbolt";
+  
+  /* macOS 27 Optical Liquid Glass Base (Deep tinted for perfect contrast) */
+  --bg-app: rgba(13, 17, 26, 0.78);
+  --bg-header: rgba(18, 24, 38, 0.60);
+  --bg-surface: rgba(255, 255, 255, 0.055);
+  --bg-surface-elevated: rgba(255, 255, 255, 0.09);
+  --bg-surface-hover: rgba(255, 255, 255, 0.13);
+  --bg-surface-selected: rgba(56, 189, 248, 0.18);
+  --bg-surface-card: linear-gradient(135deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(16, 22, 34, 0.65);
+  --bg-surface-card-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(20, 28, 44, 0.75);
+
+  /* Liquid Glass Specular & Border System */
+  --glass-blur: blur(48px) saturate(210%) brightness(1.08);
+  --glass-hud-blur: blur(40px) saturate(220%) brightness(1.12);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-border-subtle: rgba(255, 255, 255, 0.08);
+  --glass-border-interactive: rgba(255, 255, 255, 0.38);
+  --bg-surface-border: rgba(255, 255, 255, 0.14);
+  --bg-surface-border-subtle: rgba(255, 255, 255, 0.08);
+  --bg-surface-border-highlight: #38bdf8;
+  
+  /* Specular Rim Illumination & Glass Shadows */
+  --glass-specular-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.38);
+  --glass-specular-bottom: inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+  --box-shadow-window: 0 28px 64px -12px rgba(0, 0, 0, 0.78), inset 0 1px 0 0 rgba(255, 255, 255, 0.40), inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+  --box-shadow-hud: 0 20px 48px -8px rgba(0, 0, 0, 0.72), inset 0 1px 0 0 rgba(255, 255, 255, 0.48), inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+  --box-shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  
+  /* Ambient Liquid Caustics (Animated mesh glows) */
+  --glass-caustic-1: rgba(56, 189, 248, 0.25);
+  --glass-caustic-2: rgba(99, 102, 241, 0.18);
+  --glass-caustic-3: rgba(14, 165, 233, 0.20);
+
+  /* High-Contrast Typography */
+  --text-primary: #FFFFFF;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  
+  /* Brand / Accent */
+  --accent-primary: #0284C7;
+  --color-accent-light: #38BDF8;
+  --color-accent-subtle: rgba(56, 189, 248, 0.16);
+  --accent-glow: rgba(56, 189, 248, 0.45);
+  --score-highlight: #38BDF8;
+  --color-score-leader: #FFFFFF;
+  
+  /* Semantic Badges & Live Status */
+  --color-live-badge-bg: rgba(220, 38, 38, 0.85);
+  --color-live-badge-text: #FFFFFF;
+  --live-badge-dot: #F87171;
+  --live-green: #34D399;
+  
+  --event-flash: rgba(56, 189, 248, 0.65);
+  --danger-color: #EF4444;
+  --warning-color: #F59E0B;
+  --favourite-gold: #FBBF24;
+
+  /* Standard Apple Radii & Timing */
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 13px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-full: 9999px;
+  --duration-fast: 0.16s;
+  --duration-normal: 0.26s;
+  --ease-out-macos: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="regrowth"] {
+  --theme-name: "regrowth";
+  
+  /* macOS 27 Optical Liquid Glass Base (Emerald Obsidian Tint) */
+  --bg-app: rgba(8, 18, 14, 0.80);
+  --bg-header: rgba(12, 26, 20, 0.62);
+  --bg-surface: rgba(255, 255, 255, 0.055);
+  --bg-surface-elevated: rgba(255, 255, 255, 0.09);
+  --bg-surface-hover: rgba(255, 255, 255, 0.13);
+  --bg-surface-selected: rgba(52, 211, 153, 0.18);
+  --bg-surface-card: linear-gradient(135deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(12, 24, 18, 0.65);
+  --bg-surface-card-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(16, 32, 24, 0.75);
+
+  /* Liquid Glass Specular & Border System */
+  --glass-blur: blur(48px) saturate(210%) brightness(1.08);
+  --glass-hud-blur: blur(40px) saturate(220%) brightness(1.12);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-border-subtle: rgba(255, 255, 255, 0.08);
+  --glass-border-interactive: rgba(255, 255, 255, 0.38);
+  --bg-surface-border: rgba(255, 255, 255, 0.14);
+  --bg-surface-border-subtle: rgba(255, 255, 255, 0.08);
+  --bg-surface-border-highlight: #34d399;
+  
+  /* Specular Rim Illumination & Glass Shadows */
+  --glass-specular-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.38);
+  --glass-specular-bottom: inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+  --box-shadow-window: 0 28px 64px -12px rgba(0, 0, 0, 0.80), inset 0 1px 0 0 rgba(255, 255, 255, 0.40), inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+  --box-shadow-hud: 0 20px 48px -8px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.48), inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+  --box-shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.38), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  
+  /* Ambient Liquid Caustics */
+  --glass-caustic-1: rgba(52, 211, 153, 0.25);
+  --glass-caustic-2: rgba(16, 185, 129, 0.20);
+  --glass-caustic-3: rgba(6, 182, 212, 0.16);
+
+  /* High-Contrast Typography */
+  --text-primary: #FFFFFF;
+  --text-secondary: #D1FAE5;
+  --text-muted: #A7F3D0;
+  
+  /* Brand / Accent */
+  --accent-primary: #059669;
+  --color-accent-light: #34D399;
+  --color-accent-subtle: rgba(52, 211, 153, 0.16);
+  --accent-glow: rgba(52, 211, 153, 0.45);
+  --score-highlight: #34D399;
+  --color-score-leader: #FFFFFF;
+  
+  /* Semantic Badges & Live Status */
+  --color-live-badge-bg: rgba(5, 150, 105, 0.85);
+  --color-live-badge-text: #FFFFFF;
+  --live-badge-dot: #6EE7B7;
+  --live-green: #34D399;
+  
+  --event-flash: rgba(52, 211, 153, 0.65);
+  --danger-color: #F87171;
+  --warning-color: #FBBF24;
+  --favourite-gold: #FCD34D;
+
+  /* Standard Apple Radii & Timing */
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 13px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-full: 9999px;
+  --duration-fast: 0.16s;
+  --duration-normal: 0.26s;
+  --ease-out-macos: cubic-bezier(0.16, 1, 0.3, 1);
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="frostbolt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameBeam Overlay</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/overlay.css">
+</head>
+<body>
+  <div class="overlay-container">
+    <div class="hud-card" id="hud-card">
+      <!-- macOS 27 Ambient Optical Caustic Mesh -->
+      <div class="hud-ambient-mesh" aria-hidden="true">
+        <div class="hud-orb hud-orb-1"></div>
+        <div class="hud-orb hud-orb-2"></div>
+      </div>
+
+      <!-- Hover Quick Controls -->
+      <div class="hud-controls">
+        <button id="hud-prev-btn" class="hud-btn" title="Previous Live Match">‹</button>
+        <button id="hud-next-btn" class="hud-btn" title="Next Live Match">›</button>
+        <button id="hud-picker-btn" class="hud-btn" title="Open Match Picker">⊞</button>
+        <button id="hud-unpin-btn" class="hud-btn" title="Hide Overlay">×</button>
+      </div>
+
+      <!-- Top Row: League & Time/Status -->
+      <div class="hud-top">
+        <div class="hud-league">
+          <span id="hud-sport-icon">⚽</span>
+          <span id="hud-league-name">PREMIER LEAGUE</span>
+        </div>
+        <div class="hud-timing">
+          <span id="hud-status-badge" class="hud-status-badge">
+            <span class="live-dot" id="hud-live-dot"></span>
+            <span id="hud-clock-text">78'</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Main Body: Competitors & Scores (Standard Layout) -->
+      <div class="hud-body" id="standard-hud-body">
+        <div class="competitor away">
+          <img id="hud-away-logo" class="team-badge-img" src="" alt="Away" style="display:none;">
+          <div id="hud-away-fallback" class="team-badge-fallback">AWY</div>
+          <span id="hud-away-name" class="team-abbrev">AWY</span>
+        </div>
+
+        <div class="scores-wrapper">
+          <span id="hud-away-score" class="score-digit">0</span>
+          <span class="score-divider">—</span>
+          <span id="hud-home-score" class="score-digit">0</span>
+        </div>
+
+        <div class="competitor home">
+          <img id="hud-home-logo" class="team-badge-img" src="" alt="Home" style="display:none;">
+          <div id="hud-home-fallback" class="team-badge-fallback">HOM</div>
+          <span id="hud-home-name" class="team-abbrev">HOM</span>
+        </div>
+      </div>
+
+      <!-- F1 Telemetry Layout (Swapped in when Motorsport) -->
+      <div class="f1-hud-layout" id="f1-hud-body" style="display: none;">
+        <div class="f1-driver-row">
+          <div class="f1-driver-meta">
+            <span class="f1-pos">1</span>
+            <span class="f1-driver-name" id="f1-d1-name">VER</span>
+          </div>
+          <span class="f1-gap" id="f1-d1-gap">LEADER</span>
+        </div>
+        <div class="f1-driver-row">
+          <div class="f1-driver-meta">
+            <span class="f1-pos">2</span>
+            <span class="f1-driver-name" id="f1-d2-name">NOR</span>
+          </div>
+          <span class="f1-gap" id="f1-d2-gap">+2.418s</span>
+        </div>
+        <div class="f1-driver-row">
+          <div class="f1-driver-meta">
+            <span class="f1-pos">3</span>
+            <span class="f1-driver-name" id="f1-d3-name">LEC</span>
+          </div>
+          <span class="f1-gap" id="f1-d3-gap">+4.982s</span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Situation metadata & Stale indicator -->
+      <div class="hud-bottom">
+        <div class="situation-text" id="hud-situation-text">Regular Season</div>
+        <div class="stale-indicator" id="hud-stale-indicator">
+          <span>⚠️</span>
+          <span id="hud-stale-time">Updated 30s ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/overlay.js"></script>
+</body>
+</html>

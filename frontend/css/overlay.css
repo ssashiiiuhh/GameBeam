@@ -1,0 +1,329 @@
+/* overlay.css - macOS 27 Liquid Glass Desktop Score Overlay HUD */
+
+.overlay-container {
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.hud-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 100%), var(--bg-app);
+  backdrop-filter: var(--glass-hud-blur);
+  -webkit-backdrop-filter: var(--glass-hud-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--box-shadow-hud);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 12px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: all var(--duration-normal) var(--ease-out-macos);
+  cursor: grab;
+  -webkit-app-region: drag; /* Native macOS drag handling */
+}
+
+.hud-card:active {
+  cursor: grabbing;
+}
+
+.hud-card:hover {
+  border-color: var(--glass-border-interactive);
+  box-shadow: 0 24px 56px -6px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Ambient Optical Caustic Mesh for HUD */
+.hud-ambient-mesh {
+  position: absolute;
+  inset: -12px;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(28px);
+  opacity: 0.70;
+  overflow: hidden;
+}
+
+.hud-orb {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.hud-orb-1 {
+  width: 150px;
+  height: 150px;
+  top: -35px;
+  left: -25px;
+  background: radial-gradient(circle, var(--glass-caustic-1) 0%, rgba(0, 0, 0, 0) 70%);
+  animation: liquid-ambient-drift 12s ease-in-out infinite alternate;
+}
+
+.hud-orb-2 {
+  width: 160px;
+  height: 160px;
+  bottom: -35px;
+  right: -25px;
+  background: radial-gradient(circle, var(--glass-caustic-2) 0%, rgba(0, 0, 0, 0) 70%);
+  animation: liquid-ambient-drift-rev 15s ease-in-out infinite alternate;
+}
+
+/* Hover Quick Controls (Frosted Glass Droplets) */
+.hud-controls {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out-macos);
+  -webkit-app-region: no-drag;
+  z-index: 10;
+}
+
+.hud-card:hover .hud-controls {
+  opacity: 1;
+}
+
+.hud-btn {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.40), 0 2px 6px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-macos);
+}
+
+.hud-btn:hover {
+  background: var(--accent-primary);
+  color: #FFFFFF;
+  border-color: var(--color-accent-light);
+  box-shadow: 0 0 10px var(--accent-glow), inset 0 1px 0 0 rgba(255, 255, 255, 0.50);
+  transform: scale(1.12);
+}
+
+/* Top bar: League, Period/Clock, Live Dot */
+.hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+  position: relative;
+  z-index: 2;
+}
+
+.hud-league {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hud-timing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-status-badge {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: var(--score-highlight);
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Main Body: Competitors and Scores */
+.hud-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  position: relative;
+  z-index: 2;
+}
+
+.competitor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.competitor.away {
+  justify-content: flex-start;
+}
+
+.competitor.home {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.team-badge-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+
+.team-badge-fallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.team-abbrev {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.scores-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 10px;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.score-digit {
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #FFFFFF;
+  min-width: 24px;
+  text-align: center;
+  letter-spacing: -0.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.score-divider {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* F1 Leaderboard HUD Layout */
+.f1-hud-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.f1-driver-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.f1-driver-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.f1-pos {
+  width: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.f1-driver-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.f1-gap {
+  font-variant-numeric: tabular-nums;
+  color: var(--score-highlight);
+  font-size: 10.5px;
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Bottom status / Situation banner */
+.hud-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 3px;
+  position: relative;
+  z-index: 2;
+}
+
+.situation-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.stale-indicator {
+  display: none;
+  color: var(--warning-color);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.stale-indicator.visible {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}

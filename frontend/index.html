@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="frostbolt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameBeam</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/picker.css">
+</head>
+<body>
+  <div class="picker-container">
+    <!-- macOS 27 Ambient Optical Caustic Mesh (Fluid light behind frosted glass) -->
+    <div class="glass-ambient-mesh" aria-hidden="true">
+      <div class="glass-orb orb-1"></div>
+      <div class="glass-orb orb-2"></div>
+      <div class="glass-orb orb-3"></div>
+    </div>
+
+    <!-- Header (macOS window controls + title + actions) -->
+    <header class="picker-header">
+      <div class="header-left">
+        <div class="brand-title">
+          <span class="live-dot" style="margin-right: 2px;"></span>
+          <span>GameBeam</span>
+        </div>
+        <span class="brand-tag">macOS HUD</span>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="search-bar">
+        <svg class="search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search MLB, NFL, NBA... (⌘K)" autocomplete="off" spellcheck="false">
+        <button id="search-clear-btn" class="search-clear-btn" style="display: none;" title="Clear search (Esc)">×</button>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+
+      <div class="header-actions">
+        <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme (Frostbolt / Regrowth)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </button>
+        <button id="settings-toggle-btn" class="icon-btn" title="Settings">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <button id="refresh-btn" class="icon-btn" title="Refresh Live Data">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+        <button id="close-picker-btn" class="icon-btn close-btn" title="Close to Menu Bar">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation & Filters -->
+    <nav class="nav-filters">
+      <!-- Sport Segmented Filter Chips (Focused on MLB, NFL, NBA) -->
+      <div class="sport-pills" id="sport-pills-container">
+        <button class="sport-pill active" data-filter="all">All</button>
+        <button class="sport-pill" data-filter="mlb">⚾ MLB</button>
+        <button class="sport-pill" data-filter="nfl">🏈 NFL</button>
+        <button class="sport-pill" data-filter="nba">🏀 NBA</button>
+        <button class="sport-pill fav-pill" data-filter="favs">★ Favourites</button>
+      </div>
+
+      <!-- SofaScore Date Scope Strip -->
+      <div class="date-tabs" id="date-tabs-container">
+        <button class="date-tab" data-tab="yesterday">Yesterday</button>
+        <button class="date-tab active" data-tab="today">
+          <span>Today</span>
+          <span class="tab-badge" id="today-badge">0</span>
+        </button>
+        <button class="date-tab" data-tab="tomorrow">Tomorrow</button>
+        <button class="date-tab" data-tab="upcoming">Upcoming</button>
+        <button class="date-tab" data-tab="this-week">This Week</button>
+        <button class="date-tab" data-tab="all">All Dates</button>
+      </div>
+    </nav>
+
+    <!-- Pinned Match Spotlight Hero Card -->
+    <div class="spotlight-section" id="spotlight-container"></div>
+
+    <!-- Main Matches Scroll Container -->
+    <main class="matches-scroll" id="matches-container">
+      <div class="empty-state">
+        <div class="live-dot" style="margin: 0 auto 8px auto;"></div>
+        <div>Loading sports fixtures...</div>
+      </div>
+    </main>
+
+    <!-- Settings Overlay Sheet (Toggled via Gear Icon) -->
+    <div class="settings-sheet" id="settings-sheet">
+      <div class="settings-header">
+        <span>Settings</span>
+        <button id="close-settings-btn" class="icon-btn">×</button>
+      </div>
+      <div class="settings-content">
+        <div class="settings-section">
+          <label class="settings-label">APPEARANCE</label>
+          <div class="theme-options">
+            <button class="theme-btn active" data-theme-set="frostbolt">
+              <span class="theme-dot frost"></span>
+              <span>Frostbolt (Cyan)</span>
+            </button>
+            <button class="theme-btn" data-theme-set="regrowth">
+              <span class="theme-dot growth"></span>
+              <span>Regrowth (Emerald)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Automation & Auto-Pinning -->
+        <div class="settings-section">
+          <label class="settings-label">AUTOMATION & PINNING</label>
+          <div class="setting-switch-row">
+            <div class="setting-switch-info">
+              <span class="setting-switch-title">Auto-Pin Favourite Matches</span>
+              <span class="setting-switch-desc">Automatically pin live matches for your favourite teams</span>
+            </div>
+            <label class="macos-switch">
+              <input type="checkbox" id="setting-auto-pin" checked>
+              <span class="macos-switch-slider"></span>
+            </label>
+          </div>
+          <div class="setting-switch-row">
+            <div class="setting-switch-info">
+              <span class="setting-switch-title">Auto-Hide HUD on Final</span>
+              <span class="setting-switch-desc">Automatically dismiss floating HUD 15s after match finishes</span>
+            </div>
+            <label class="macos-switch">
+              <input type="checkbox" id="setting-auto-hide" checked>
+              <span class="macos-switch-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Favourite Teams Management -->
+        <div class="settings-section">
+          <div class="settings-section-header">
+            <label class="settings-label">FAVOURITE TEAMS</label>
+            <span class="fav-count-badge" id="fav-teams-count-badge">0 selected</span>
+          </div>
+          
+          <div class="teams-filter-strip">
+            <div class="team-sport-tabs" id="team-sport-tabs">
+              <button class="team-tab-btn active" data-sport="baseball">⚾ MLB</button>
+              <button class="team-tab-btn" data-sport="football">🏈 NFL</button>
+              <button class="team-tab-btn" data-sport="basketball">🏀 NBA</button>
+              <button class="team-tab-btn" data-sport="all">All</button>
+            </div>
+            <input type="text" id="team-search-input" class="team-search-input" placeholder="Search team by city or name...">
+          </div>
+
+          <div class="teams-picker-grid" id="teams-picker-grid">
+            <!-- Dynamic team chips rendered by picker.js -->
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <label class="settings-label">DESKTOP HUD OVERLAY</label>
+          <div class="setting-row">
+            <span>Magnetic Edge Snapping</span>
+            <span class="setting-value">20px (Safe Insets)</span>
+          </div>
+          <div class="setting-row">
+            <span>HUD Click-Through</span>
+            <span class="setting-value">⌘⇧S (Global Hotkey)</span>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <label class="settings-label">DATA CADENCE</label>
+          <div class="setting-row">
+            <span>Live Polling Rate</span>
+            <span class="setting-value">12-15s (Token Bucket)</span>
+          </div>
+          <div class="setting-row">
+            <span>Idle Polling Rate</span>
+            <span class="setting-value">0% CPU / Dormant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match Details Slide-Over Drawer -->
+    <div class="details-drawer" id="details-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <span class="drawer-competition-badge" id="drawer-comp-badge">MLB</span>
+          <span class="drawer-title" id="drawer-title">Match Details</span>
+        </div>
+        <button id="close-drawer-btn" class="icon-btn" title="Close (Esc)">×</button>
+      </div>
+      <div class="drawer-body" id="drawer-body">
+        <!-- Dynamically populated linescore, stats, venue -->
+      </div>
+      <div class="drawer-footer">
+        <button id="drawer-fav-btn" class="drawer-action-btn secondary">★ Add to Favourites</button>
+        <button id="drawer-pin-btn" class="drawer-action-btn primary">Pin to Desktop HUD</button>
+      </div>
+    </div>
+
+    <!-- Footer Bar -->
+    <footer class="picker-footer">
+      <div class="footer-left">
+        <span class="network-status-dot"></span>
+        <span id="footer-status-text">Ready</span>
+      </div>
+      <div class="footer-right" id="footer-pinned-summary">
+        No match pinned
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="js/picker.js"></script>
+</body>
+</html>

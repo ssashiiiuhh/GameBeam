@@ -1,0 +1,18 @@
+# Xcode & SwiftPM
+.build/
+build/
+*.xcodeproj
+*.xcworkspace
+.swiftpm/
+
+# macOS
+.DS_Store
+*.swp
+*~
+.Spotlight-V100
+.Trashes
+
+# Node & Tauri legacy
+node_modules/
+dist/
+src-tauri/target/
