@@ -171,6 +171,9 @@ public struct Match: Codable, Identifiable, Hashable, Sendable {
     }
     
     public var formattedStartTime: String {
+        if isLive {
+            return statusDisplay
+        }
         guard let date = DateFormatterCache.parseISO8601(scheduledStartTime) else {
             return statusDisplay
         }
@@ -179,6 +182,8 @@ public struct Match: Codable, Identifiable, Hashable, Sendable {
             return DateFormatterCache.timeOnly.string(from: date)
         } else if cal.isDateInTomorrow(date) {
             return "Tomorrow \(DateFormatterCache.timeOnly.string(from: date))"
+        } else if cal.isDateInYesterday(date) {
+            return "Yesterday \(DateFormatterCache.timeOnly.string(from: date))"
         } else {
             return DateFormatterCache.monthDayTime.string(from: date)
         }

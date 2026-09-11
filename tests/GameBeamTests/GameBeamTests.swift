@@ -337,4 +337,42 @@ extension GameBeamTests {
         mem.menuBarIconOnly = true
         XCTAssertTrue(mem.menuBarIconOnly)
     }
+    
+    func testDayRolloverAndRefreshBehaviors() {
+        // 1. Verify MemoryStore resets date tab when a new day arrives
+        let memoryStore = MemoryStore.shared
+        memoryStore.setSelectedDateTab("tomorrow")
+        XCTAssertEqual(memoryStore.memory.selectedDateTab, "tomorrow")
+        
+        // Simulate lastActiveDate being yesterday
+        memoryStore.memory.lastActiveDate = "2020-01-01"
+        let resetOccurred = memoryStore.checkAndResetDayIfNeeded()
+        XCTAssertTrue(resetOccurred, "checkAndResetDayIfNeeded should detect day rollover")
+        XCTAssertEqual(memoryStore.memory.selectedDateTab, "today", "selectedDateTab should be auto-reset to 'today'")
+        
+        // 2. Verify live match never formats as 'Tomorrow'
+        let liveMatch = Match(
+            id: "live_test", provider: "test", sport: .mlb, competitionId: "mlb", competitionName: "MLB",
+            scheduledStartTime: "2026-09-12T23:00:00Z", // Future date string
+            statusStage: .inProgress, statusDisplay: "Bot 5",
+            homeTeam: Team(id: "147", name: "Yankees", shortName: "NYY", abbreviation: "NYY", logoUrl: "", isHome: true, score: 3),
+            awayTeam: Team(id: "115", name: "Rockies", shortName: "COL", abbreviation: "COL", logoUrl: "", isHome: false, score: 2),
+            sportDetails: .none, lastUpdated: 0
+        )
+        XCTAssertTrue(liveMatch.isLive)
+        XCTAssertEqual(liveMatch.formattedStartTime, "Bot 5", "Live match formattedStartTime must return live statusDisplay, never a future date")
+        
+        // 3. Verify pinned match snapshot update
+        memoryStore.pinMatch(liveMatch)
+        XCTAssertEqual(memoryStore.memory.pinnedMatchId, "live_test")
+        XCTAssertEqual(memoryStore.memory.lastPinnedMatchSnapshot?.homeTeam.score, 3)
+        
+        var updatedLive = liveMatch
+        updatedLive.homeTeam.score = 5
+        updatedLive.statusDisplay = "Final"
+        updatedLive.statusStage = .completed
+        memoryStore.updatePinnedMatchSnapshot(updatedLive)
+        XCTAssertEqual(memoryStore.memory.lastPinnedMatchSnapshot?.homeTeam.score, 5)
+        XCTAssertEqual(memoryStore.memory.lastPinnedMatchSnapshot?.statusStage, .completed)
+    }
 }

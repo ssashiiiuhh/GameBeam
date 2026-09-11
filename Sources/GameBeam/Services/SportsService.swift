@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 
 public final class SportsService: ObservableObject, @unchecked Sendable {
     public static let shared = SportsService()
@@ -9,6 +10,7 @@ public final class SportsService: ObservableObject, @unchecked Sendable {
     @Published public private(set) var lastFetchDate: Date?
     
     private var pollTimer: AnyCancellable?
+    private var systemObservers = Set<AnyCancellable>()
     private let urlSession: URLSession
     
     // Per-sport cache & dynamic scheduling
@@ -31,13 +33,43 @@ public final class SportsService: ObservableObject, @unchecked Sendable {
         pollTimer = Timer.publish(every: 5, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
-                self?.fetchAllSports(force: false)
+                if MemoryStore.shared.checkAndResetDayIfNeeded() {
+                    self?.nextFetchTime.removeAll()
+                    self?.fetchAllSports(force: true)
+                } else {
+                    self?.fetchAllSports(force: false)
+                }
             }
+            
+        // 1. Observe Mac wake from sleep -> immediate refresh
+        NSWorkspace.shared.notificationCenter.publisher(for: NSWorkspace.didWakeNotification)
+            .sink { [weak self] _ in
+                #if DEBUG
+                print("[SportsService] Mac woke from sleep — forcing immediate refresh")
+                #endif
+                MemoryStore.shared.checkAndResetDayIfNeeded()
+                self?.nextFetchTime.removeAll()
+                self?.fetchAllSports(force: true)
+            }
+            .store(in: &systemObservers)
+            
+        // 2. Observe Midnight / Calendar day change -> reset date tabs and immediate refresh
+        NotificationCenter.default.publisher(for: Notification.Name.NSCalendarDayChanged)
+            .sink { [weak self] _ in
+                #if DEBUG
+                print("[SportsService] Calendar day changed — resetting date tabs and forcing refresh")
+                #endif
+                MemoryStore.shared.checkAndResetDayIfNeeded()
+                self?.nextFetchTime.removeAll()
+                self?.fetchAllSports(force: true)
+            }
+            .store(in: &systemObservers)
     }
     
     public func stopPolling() {
         pollTimer?.cancel()
         pollTimer = nil
+        systemObservers.removeAll()
     }
     
     public func fetchAllSports(force: Bool = true) {
@@ -148,6 +180,12 @@ public final class SportsService: ObservableObject, @unchecked Sendable {
         self.allMatches = combined
         self.isLoading = false
         self.lastFetchDate = Date()
+        
+        // Sync fresh score and status to lastPinnedMatchSnapshot
+        if let pinnedId = MemoryStore.shared.memory.pinnedMatchId,
+           let updated = combined.first(where: { $0.id == pinnedId }) {
+            MemoryStore.shared.updatePinnedMatchSnapshot(updated)
+        }
     }
     
     /// Determines how soon this specific sport needs to be re-pinged
@@ -257,7 +295,7 @@ public final class SportsService: ObservableObject, @unchecked Sendable {
     private func calculateDateRange() -> (mlbStart: String, mlbEnd: String, espnDates: String) {
         let now = Date()
         let cal = Calendar.current
-        let start = cal.date(byAdding: .day, value: -1, to: now) ?? now
+        let start = cal.date(byAdding: .day, value: -2, to: now) ?? now
         let end = cal.date(byAdding: .day, value: 10, to: now) ?? now
         
         let isoFormatter = DateFormatter()
@@ -294,6 +332,10 @@ public final class SportsService: ObservableObject, @unchecked Sendable {
         // 2. Date tab filter
         let cal = Calendar.current
         let today = Date()
+        var usEasternCal = Calendar(identifier: .gregorian)
+        if let tz = TimeZone(identifier: "America/New_York") {
+            usEasternCal.timeZone = tz
+        }
         
         list = list.filter { match in
             guard let matchDate = DateFormatterCache.parseISO8601(match.scheduledStartTime) else {
@@ -302,15 +344,21 @@ public final class SportsService: ObservableObject, @unchecked Sendable {
             
             switch dateTab {
             case "yesterday":
-                guard let yesterday = cal.date(byAdding: .day, value: -1, to: today) else { return false }
-                return cal.isDate(matchDate, inSameDayAs: yesterday)
+                if match.isLive { return false }
+                let isYestLocal = cal.date(byAdding: .day, value: -1, to: today).map { cal.isDate(matchDate, inSameDayAs: $0) } ?? false
+                let isYestUS = usEasternCal.date(byAdding: .day, value: -1, to: today).map { usEasternCal.isDate(matchDate, inSameDayAs: $0) } ?? false
+                return isYestLocal || isYestUS
             case "today":
-                return cal.isDateInToday(matchDate) || match.isLive
+                return match.isLive || cal.isDateInToday(matchDate) || usEasternCal.isDateInToday(matchDate)
             case "tomorrow":
-                guard let tomorrow = cal.date(byAdding: .day, value: 1, to: today) else { return false }
-                return cal.isDate(matchDate, inSameDayAs: tomorrow)
+                if match.isLive { return false }
+                let inToday = cal.isDateInToday(matchDate) || usEasternCal.isDateInToday(matchDate)
+                if inToday { return false }
+                let isTomLocal = cal.date(byAdding: .day, value: 1, to: today).map { cal.isDate(matchDate, inSameDayAs: $0) } ?? false
+                let isTomUS = usEasternCal.date(byAdding: .day, value: 1, to: today).map { usEasternCal.isDate(matchDate, inSameDayAs: $0) } ?? false
+                return isTomLocal || isTomUS
             case "upcoming":
-                return matchDate >= cal.startOfDay(for: today)
+                return matchDate >= cal.startOfDay(for: today) || match.isLive
             default:
                 return true
             }

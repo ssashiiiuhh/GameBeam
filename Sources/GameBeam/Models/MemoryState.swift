@@ -46,6 +46,7 @@ public struct AppMemory: Codable, Sendable {
     public var clickThrough: Bool
     public var showMenuBarScores: Bool
     public var menuBarIconOnly: Bool
+    public var lastActiveDate: String?
     
     public init(
         theme: String = "clear",
@@ -60,7 +61,8 @@ public struct AppMemory: Codable, Sendable {
         overlayPosition: OverlayPosition = .init(),
         clickThrough: Bool = false,
         showMenuBarScores: Bool = true,
-        menuBarIconOnly: Bool = false
+        menuBarIconOnly: Bool = false,
+        lastActiveDate: String? = nil
     ) {
         self.theme = theme
         self.pinnedMatchId = pinnedMatchId
@@ -75,6 +77,7 @@ public struct AppMemory: Codable, Sendable {
         self.clickThrough = clickThrough
         self.showMenuBarScores = showMenuBarScores
         self.menuBarIconOnly = menuBarIconOnly
+        self.lastActiveDate = lastActiveDate
     }
     
     public init(from decoder: Decoder) throws {
@@ -92,5 +95,6 @@ public struct AppMemory: Codable, Sendable {
         self.clickThrough = try container.decodeIfPresent(Bool.self, forKey: .clickThrough) ?? false
         self.showMenuBarScores = try container.decodeIfPresent(Bool.self, forKey: .showMenuBarScores) ?? true
         self.menuBarIconOnly = try container.decodeIfPresent(Bool.self, forKey: .menuBarIconOnly) ?? false
+        self.lastActiveDate = try container.decodeIfPresent(String.self, forKey: .lastActiveDate)
     }
 }

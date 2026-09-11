@@ -49,6 +49,19 @@ public final class PickerWindowController: NSWindowController, NSWindowDelegate 
     
     public func showPicker() {
         guard let window = window else { return }
+        
+        // 1. Reset date tab to today if calendar day has changed
+        MemoryStore.shared.checkAndResetDayIfNeeded()
+        
+        // 2. If data is stale (> 30s) or missing, immediately trigger refresh
+        if let last = SportsService.shared.lastFetchDate {
+            if Date().timeIntervalSince(last) > 30 {
+                SportsService.shared.fetchAllSports(force: true)
+            }
+        } else {
+            SportsService.shared.fetchAllSports(force: true)
+        }
+        
         window.center()
         window.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)

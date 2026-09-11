@@ -14,6 +14,16 @@ public struct MatchCardView: View {
         memoryStore.isMatchFavoured(match: match)
     }
     
+    private var cardStatusText: String {
+        if match.isLive {
+            return match.statusDisplay
+        } else if match.isFinal {
+            return match.statusDisplay.isEmpty ? "Final" : match.statusDisplay
+        } else {
+            return match.formattedStartTime
+        }
+    }
+    
     public var body: some View {
         HStack(spacing: 12) {
             // Sport & Status Indicator
@@ -34,13 +44,13 @@ public struct MatchCardView: View {
                             .fill(Color.red)
                             .frame(width: 5, height: 5)
                     }
-                    Text(match.statusDisplay)
+                    Text(cardStatusText)
                         .font(.system(size: 10, weight: .medium, design: .monospaced))
-                        .foregroundColor(match.isLive ? .red : .white.opacity(0.6))
+                        .foregroundColor(match.isLive ? .red : .white.opacity(0.65))
                         .lineLimit(1)
                 }
             }
-            .frame(width: 80, alignment: .leading)
+            .frame(width: 88, alignment: .leading)
             
             // Teams & Scores
             VStack(spacing: 5) {

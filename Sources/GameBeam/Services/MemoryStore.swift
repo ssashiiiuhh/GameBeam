@@ -22,6 +22,30 @@ public final class MemoryStore: ObservableObject, @unchecked Sendable {
         } else {
             self.memory = AppMemory()
         }
+        
+        _ = checkAndResetDayIfNeeded()
+    }
+    
+    /// Detects if calendar day has changed since last active session.
+    /// If a new day has arrived, automatically resets `selectedDateTab` to "today".
+    @discardableResult
+    public func checkAndResetDayIfNeeded() -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone.current
+        let todayString = formatter.string(from: Date())
+        
+        let lastDay = memory.lastActiveDate
+        if lastDay != todayString {
+            #if DEBUG
+            print("[MemoryStore] Day changed from \(lastDay ?? "nil") to \(todayString). Resetting tab to 'today'.")
+            #endif
+            memory.lastActiveDate = todayString
+            memory.selectedDateTab = "today"
+            save()
+            return true
+        }
+        return false
     }
     
     public func save() {
@@ -63,6 +87,12 @@ public final class MemoryStore: ObservableObject, @unchecked Sendable {
     // MARK: - Pinning
     public func pinMatch(_ match: Match) {
         memory.pinnedMatchId = match.id
+        memory.lastPinnedMatchSnapshot = match
+        save()
+    }
+    
+    public func updatePinnedMatchSnapshot(_ match: Match) {
+        guard memory.pinnedMatchId == match.id else { return }
         memory.lastPinnedMatchSnapshot = match
         save()
     }

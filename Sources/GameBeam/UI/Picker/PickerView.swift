@@ -23,6 +23,23 @@ public struct PickerView: View {
         )
     }
     
+    private var liveMatchesCount: Int {
+        sportsService.allMatches.filter { $0.isLive }.count
+    }
+    
+    private func relativeTimeString(from date: Date) -> String {
+        let diff = max(0, Int(Date().timeIntervalSince(date)))
+        if diff < 15 {
+            return "Updated just now"
+        } else if diff < 60 {
+            return "Updated \(diff)s ago"
+        } else if diff < 3600 {
+            return "Updated \(diff / 60)m ago"
+        } else {
+            return "Updated \(diff / 3600)h ago"
+        }
+    }
+    
     private var spotlightMatch: Match? {
         // Priority 1: Currently pinned match
         if let pinnedId = memoryStore.memory.pinnedMatchId,
@@ -61,7 +78,14 @@ public struct PickerView: View {
             // Date Tabs
             dateTabsRow
                 .padding(.horizontal, 16)
-                .padding(.bottom, 12)
+                .padding(.bottom, liveMatchesCount > 0 && memoryStore.memory.selectedDateTab != "today" ? 6 : 12)
+            
+            // Prominent banner if games are live but user is on another tab
+            if liveMatchesCount > 0 && memoryStore.memory.selectedDateTab != "today" {
+                liveBanner
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 10)
+            }
             
             Divider()
                 .background(Color.white.opacity(0.08))
@@ -131,16 +155,25 @@ public struct PickerView: View {
             
             Spacer()
             
-            Button(action: { sportsService.fetchAllSports() }) {
+            if let last = sportsService.lastFetchDate {
+                Text(relativeTimeString(from: last))
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.40))
+                    .padding(.trailing, 2)
+            }
+            
+            Button(action: { sportsService.fetchAllSports(force: true) }) {
                 Image(systemName: "arrow.clockwise")
                     .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.white.opacity(0.85))
+                    .rotationEffect(.degrees(sportsService.isLoading ? 360 : 0))
+                    .animation(sportsService.isLoading ? Animation.linear(duration: 0.85).repeatForever(autoreverses: false) : .default, value: sportsService.isLoading)
                     .frame(width: 24, height: 24)
                     .background(Color.white.opacity(0.1))
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
-            .help("Refresh Scores")
+            .help("Refresh Scores Now")
             
             Button(action: { showingSettings = true }) {
                 Image(systemName: "gearshape")
@@ -240,16 +273,57 @@ public struct PickerView: View {
     
     private func dateTabButton(id: String, label: String) -> some View {
         let isSelected = memoryStore.memory.selectedDateTab == id
+        let isTodayWithLive = (id == "today" && liveMatchesCount > 0)
+        
         return Button(action: {
             memoryStore.setSelectedDateTab(id)
         }) {
-            Text(label)
-                .font(.system(size: 10, weight: isSelected ? .bold : .regular))
-                .foregroundColor(isSelected ? .cyan : .white.opacity(0.6))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 4)
-                .background(isSelected ? Color.cyan.opacity(0.12) : Color.clear)
-                .cornerRadius(8)
+            HStack(spacing: 4) {
+                if isTodayWithLive {
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 5, height: 5)
+                }
+                Text(isTodayWithLive ? "\(label) (\(liveMatchesCount))" : label)
+                    .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+            }
+            .foregroundColor(isSelected ? (isTodayWithLive ? .white : .cyan) : (isTodayWithLive ? .white : .white.opacity(0.6)))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 5)
+            .background(isSelected ? (isTodayWithLive ? Color.red.opacity(0.4) : Color.cyan.opacity(0.12)) : (isTodayWithLive ? Color.red.opacity(0.12) : Color.clear))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(isSelected ? (isTodayWithLive ? Color.red.opacity(0.6) : Color.cyan.opacity(0.3)) : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+    
+    private var liveBanner: some View {
+        Button(action: {
+            memoryStore.setSelectedDateTab("today")
+        }) {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: 6, height: 6)
+                Text("\(liveMatchesCount) match\(liveMatchesCount > 1 ? "es are" : " is") LIVE right now in Today")
+                    .font(.system(size: 10.5, weight: .bold))
+                    .foregroundColor(.white)
+                Spacer()
+                Text("Switch to Today →")
+                    .font(.system(size: 10.5, weight: .bold))
+                    .foregroundColor(.cyan)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color.red.opacity(0.18))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(Color.red.opacity(0.40), lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
     }
